@@ -1,129 +1,121 @@
-<div align="center">
+# Semantic Router
 
-<img src="website/static/img/artworks/vllm-sr-logo.dark.png" alt="vLLM Semantic Router" width="50%"/>
+A Go implementation of semantic routing for LLM applications — Fork of [vllm-project/semantic-router](https://github.com/vllm-project/semantic-router).
 
-<p><strong>System Level Intelligent Router for Mixture-of-Models at Cloud, Data Center and Edge</strong></p>
+Semantic Router is a superfast decision-making layer for your LLMs and agents. Rather than waiting for slow LLM generations to make tool-use decisions, we use the magic of semantic vector space to make those decisions — routing requests to the most appropriate handler based on meaning, not just keywords.
 
-<p>
-  <a href="https://vllm-semantic-router.com">Documentation</a> |
-  <a href="https://play.vllm-semantic-router.com">Playground</a> |
-  <a href="https://vllm-semantic-router.com/blog/">Blog</a> |
-  <a href="https://vllm-semantic-router.com/publications/">Publications</a> |
-  <a href="https://huggingface.co/LLM-Semantic-Router">Hugging Face</a>
-</p>
+## Features
 
-</div>
-
----
-
-## About
-
-In the LLM era, the number of models is exploding. Different models vary across capability, scale, cost, and privacy boundaries. Choosing and connecting the right models to build semantic AI infrastructure is a system problem.
-
-**vLLM Semantic Router** is a **signal-driven** intelligent router for that problem. It helps teams build model systems that are more **efficient**, **safer**, and more **adaptive** across cloud, data center, and edge environments.
-
-![system](website/static/img/system.png)
-
-It delivers three core values:
-
-- **Token economics**: reduce wasted tokens, increase effective output, and maximize the value of every token.
-- **LLM safety**: detect jailbreaks, sensitive leakage, and hallucinations so agents remain controllable, trustworthy, and auditable.
-- **Fullmesh intelligence**: build personal AI at the edge and intelligent MaaS in the cloud by coordinating local, private, and frontier models across cost, privacy, and capability boundaries.
+- **Semantic Routing**: Route requests based on semantic similarity using vector embeddings
+- **Multiple Encoders**: Support for various embedding providers (OpenAI, local models, etc.)
+- **Fast Inference**: Decision-making without LLM round-trips
+- **Kubernetes Native**: CRD-based configuration for cloud-native deployments
+- **Extensible**: Plugin architecture for custom encoders and route handlers
 
 ## Getting Started
 
-### Install
+### Prerequisites
+
+- Go 1.21+
+- Kubernetes 1.26+ (for CRD-based deployments)
+
+### Installation
 
 ```bash
-curl -fsSL https://vllm-semantic-router.com/install.sh | bash
+go get github.com/vllm-project/semantic-router
 ```
 
-For platform notes, detailed setup options, and troubleshooting, see the **[Installation Guide](https://vllm-semantic-router.com/docs/installation/)**.
+### Quick Start
 
-> [!IMPORTANT]
-> Online [playground](https://play.vllm-semantic-router.com) default credentials:
->
-> <!-- markdownlint-disable MD004 MD032 -->
-> + username: `love@vllm-sr.ai`
-> + password: `vllm-sr`
-> <!-- markdownlint-enable MD004 MD032 -->
+```go
+package main
 
-## Latest News
+import (
+    "fmt"
+    "log"
 
-- [2026/03/24] Vision Paper Released: [The Workload-Router-Pool Architecture for LLM Inference Optimization](https://vllm-semantic-router.com/vision-paper)
-- [2026/03/10] v0.2 Released: [vLLM Semantic Router v0.2 Athena Release](https://vllm.ai/blog/v0.2-vllm-sr-athena-release)
-- [2026/02/27] White Paper Released: [Signal Driven Decision Routing for Mixture-of-Modality Models](https://vllm-semantic-router.com/white-paper/)
-- [2026/01/05] Iris v0.1 Released: [vLLM Semantic Router v0.1 Iris: The First Major Release](https://blog.vllm.ai/2026/01/05/vllm-sr-iris.html)
-- [2025/12/16] Collaboration: [AMD × vLLM Semantic Router: Building the System Intelligence Together](https://blog.vllm.ai/2025/12/16/vllm-sr-amd.html)
-- [2025/11/19] New Blog: [Signal-Decision Driven Architecture: Reshaping Semantic Routing at Scale](https://blog.vllm.ai/2025/11/19/signal-decision.html)
-- [2025/11/03] Paper Published: [Category-Aware Semantic Caching for Heterogeneous LLM Workloads](https://arxiv.org/abs/2510.26835)
-- [2025/10/12] Paper Accepted: [When to Reason: Semantic Router for vLLM](https://arxiv.org/abs/2510.08731)
+    router "github.com/vllm-project/semantic-router"
+)
 
-<details>
-<summary>Earlier announcements</summary>
+func main() {
+    // Define routes
+    routes := []router.Route{
+        {
+            Name: "politics",
+            Utterances: []string{
+                "isn't politics the best thing ever",
+                "why don't you tell me about your political opinions",
+                "don't you just love the president",
+            },
+        },
+        {
+            Name: "chitchat",
+            Utterances: []string{
+                "how's the weather today?",
+                "how are things going?",
+                "lovely day isn't it",
+            },
+        },
+    }
 
-- [2025/12/15] New Blog: [Token-Level Truth: Real-Time Hallucination Detection for Production LLMs](https://blog.vllm.ai/2025/12/14/halugate.html)
-- [2025/10/27] New Blog: [Scaling Semantic Routing with Extensible LoRA](https://blog.vllm.ai/2025/10/27/semantic-router-modular.html)
-- [2025/10/08] Collaboration: vLLM Semantic Router with [vLLM Production Stack](https://github.com/vllm-project/production-stack) Team.
-- [2025/09/01] Released the project: [vLLM Semantic Router: Next Phase in LLM inference](https://blog.vllm.ai/2025/09/11/semantic-router.html).
+    // Initialize router with default encoder
+    sr, err := router.New(routes)
+    if err != nil {
+        log.Fatal(err)
+    }
 
-</details>
+    // Route a query
+    result, err := sr.Route("don't you love politics?")
+    if err != nil {
+        log.Fatal(err)
+    }
 
-More announcements are available on the **[Blog](https://vllm-semantic-router.com/blog/)** and **[Publications](https://vllm-semantic-router.com/publications/)** pages.
-
-## Community
-
-For questions, feedback, or to contribute, please join the `#semantic-router` channel in vLLM Slack.
-
-### Community Meetings
-
-We host bi-weekly community meetings to sync with contributors across different time zones:
-
-- **First Tuesday of the month**: 9:00-10:00 AM EST (accommodates US EST, EU, and Asia Pacific contributors)
-  - [Zoom Link](https://us05web.zoom.us/j/84122485631?pwd=BB88v03mMNLVHn60YzVk4PihuqBV9d.1)
-  - [Google Calendar Invite](https://us05web.zoom.us/meeting/tZAsdeuspj4sGdVraOOR4UaXSstrH2jjPYFq/calendar/google/add?meetingMasterEventId=4jjzUKSLSLiBHtIKZpGc3g)
-  - [ics file](https://drive.google.com/file/d/15wO8cg0ZjNxdr8OtGiZyAgkSS8_Wry0J/view?usp=sharing)
-- **Third Tuesday of the month**: 1:00-2:00 PM EST (accommodates US EST and California contributors)
-  - [Zoom Link](https://us06web.zoom.us/j/86871492845?pwd=LcTtXm9gtGu23JeWqXxbnLLCCvbumB.1)
-  - [Google Calendar Invite](https://us05web.zoom.us/meeting/tZIlcOispzkiHtH2dlkWlLym68bEqvuf3MU5/calendar/google/add?meetingMasterEventId=PqWz2vk7TOCszPXqconGAA)
-  - [ics file](https://drive.google.com/file/d/1T54mwYpXXoV9QfR76I56BFBPNbykSsTw/view?usp=sharing)
-- Meeting recordings: [YouTube](https://www.youtube.com/@vLLMSemanticRouter/videos)
-
-## Contributing
-
-If you want to contribute, start with **[CONTRIBUTING.md](CONTRIBUTING.md)**.
-
-For repository-native development workflow and validation commands, use **[AGENTS.md](AGENTS.md)** as the entrypoint and **[docs/agent/README.md](docs/agent/README.md)** as the canonical index.
-
-## Citation
-
-If you find Semantic Router helpful in your research or projects, please consider citing it:
-
-```
-@misc{semanticrouter2025,
-  title={vLLM Semantic Router},
-  author={vLLM Semantic Router Team},
-  year={2025},
-  howpublished={\url{https://github.com/vllm-project/semantic-router}},
+    fmt.Printf("Routed to: %s\n", result.Name)
 }
 ```
 
-## Star History
+## Architecture
 
-[![Star History Chart](https://api.star-history.com/svg?repos=vllm-project/semantic-router&type=Date)](https://www.star-history.com/#vllm-project/semantic-router&Date)
+```
+┌─────────────────────────────────────────┐
+│              Semantic Router            │
+├─────────────┬───────────────────────────┤
+│   Encoder   │      Route Index          │
+│  (Embedder) │  (Vector Similarity)      │
+├─────────────┴───────────────────────────┤
+│              Route Handlers             │
+└─────────────────────────────────────────┘
+```
 
-## Sponsors
+## Configuration
 
-We are grateful to our sponsors who support us:
+Semantic Router can be configured via:
 
----
+- **Go API**: Programmatic configuration
+- **YAML/JSON**: File-based configuration
+- **Kubernetes CRDs**: Cloud-native configuration (see `.crd-ref-docs.yaml`)
 
-[**AMD**](https://www.amd.com) provides us with GPU resources and [ROCm™](https://www.amd.com/en/products/software/rocm.html) software for training and researching frontier router models, enhancing E2E testing, and building the online models playground.
+## Development
 
-<div align="center">
-<a href="https://www.amd.com">
-  <img src="website/static/img/amd-logo.svg" alt="AMD" width="40%"/>
-</a>
-</div>
+```bash
+# Clone the repository
+git clone https://github.com/vllm-project/semantic-router
+cd semantic-router
 
----
+# Install dependencies
+go mod download
+
+# Run tests
+go test ./...
+
+# Build
+go build ./...
+```
+
+## Contributing
+
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## License
+
+Apache License 2.0 — see [LICENSE](LICENSE) for details.
