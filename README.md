@@ -104,9 +104,6 @@ Semantic Router can be configured via:
 git clone https://github.com/vllm-project/semantic-router
 cd semantic-router
 
-# Install dependencies
-go mod download
-
 # Run tests
 go test ./...
 
@@ -114,6 +111,6 @@ go test ./...
 go build ./...
 ```
 
-## Contributing
+## Notes
 
-Pl
+This is a personal fork for learning and experimentation. The upstream project is maintained at [vllm-project/semantic-router](https://github.com/vllm-project/semantic-router).
