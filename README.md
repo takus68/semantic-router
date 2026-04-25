@@ -60,7 +60,8 @@ func main() {
 
     // Initialize router with default encoder
     // Note: you can also pass router.WithThreshold(0.75) to tune match sensitivity
-    sr, err := router.New(routes)
+    // I found 0.82 works better for my use case — reduces false positives on short queries
+    sr, err := router.New(routes, router.WithThreshold(0.82))
     if err != nil {
         log.Fatal(err)
     }
@@ -115,8 +116,4 @@ go build ./...
 
 ## Contributing
 
-Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-## License
-
-Apache License 2.0
+Pl
